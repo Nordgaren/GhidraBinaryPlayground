@@ -4,6 +4,8 @@
 #include <unordered_map>
 #define __cpp_lib_format
 #include <format>
+#include <cctype>
+#include <execution>
 
 class Database {
 public:
@@ -17,13 +19,15 @@ public:
                 int split = line.find('\t');
                 std::string key = line.substr(0, split);
                 std::string value = line.substr(split + 1, line.size());
-                _map.emplace(key, value);
+                _map[key] = value;
             }
             return;
         }
     }
     void Insert(std::string key, std::string value) {
-        _map.emplace(key, value);
+        _map[key] = value;
+        std::transform(key.begin(), key.end(),key.begin(), ::toupper);
+        _map[key] = value;
     }
 
     std::string Get(std::string key) {
