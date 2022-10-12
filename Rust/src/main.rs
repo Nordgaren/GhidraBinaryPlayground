@@ -4,7 +4,7 @@ fn main() {
     let mut args = std::env::args().skip(1);
 
     let arg = args.next().expect("No arguments passed to program.");
-    let mut database = Database::new("sample_rust.db").expect("Could not read database");
+    let mut database = Database::new(String::from("sample_rust.db")).expect("Could not read database");
 
     if arg == "set" {
         let key = args.next().unwrap();
@@ -12,7 +12,7 @@ fn main() {
         println!("Added new entry: The key is '{}' and the value is '{}'", key, value);
 
         database.insert(key, value);
-        database.save("sample_rust.db").expect("Database was unable to save.")
+        database.save().expect("Database was unable to save.")
 
     }
 
@@ -25,11 +25,12 @@ fn main() {
 }
 
 struct Database {
+    path: String,
     map: HashMap<String, String>
 }
 
 impl Database {
-    fn new (path: &str) -> Result<Database, std::io::Error> {
+    fn new (path: String) -> Result<Database, std::io::Error> {
         let contents = match std::fs::read_to_string(&path) {
             Ok(string) => {
                 string
@@ -54,7 +55,7 @@ impl Database {
             map.insert(key.to_owned(), value.to_string());
         }
 
-        Ok(Database { map })
+        Ok(Database { path, map })
     }
 
     fn insert(&mut self, key: String, value: String) {
@@ -66,12 +67,11 @@ impl Database {
         self.map.get(key).expect("No result found for this key")
     }
 
-    fn save(&self, path: &str) -> Result<(), std::io::Error>  {
+    fn save(&self) -> Result<(), std::io::Error>  {
         let mut s = String::new();
         for (key, value) in &self.map {
             s += &format!("{}\t{}\n", key, value);
         }
-
-        std::fs::write(path, s)
+        std::fs::write(&self.path, s)
     }
 }
