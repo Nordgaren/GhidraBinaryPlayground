@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <unordered_map>
+#define __cpp_lib_format
+#include <format>
 
 class Database {
 public:
@@ -14,7 +16,7 @@ public:
                 std::string delim = "\t";
                 int split = line.find('\t');
                 std::string key = line.substr(0, split);
-                std::string value = line.substr(split, line.size());
+                std::string value = line.substr(split + 1, line.size());
                 _map.emplace(key, value);
             }
             return;
@@ -28,8 +30,16 @@ public:
         return _map[key];
     }
 
-    void Save(){
+    void Save() {
+        std::string contents = "";
+        for (auto entry : _map) {
+            contents += std::format("{}\t{}\n", entry.first, entry.second);
+        }
 
+        std::ofstream db(_path);
+        if (db.is_open()) {
+            db.write(contents.c_str(), contents.size());
+        }
     }
 
     ~Database() = default;
@@ -38,7 +48,24 @@ private:
     std::unordered_map<std::string, std::string> _map;
 };
 
-int main() {
+int main(int argc,char** argv ) {
+
     Database database("sample_cpp.db");
+    std::string arg = argv[1];
+    if (arg == "set") {
+        std::string key = argv[2];
+        std::string value = argv[3];
+
+        std::cout << std::format("Added new entry: The key is '{}' and the value is '{}'", key, value) << '\n';
+        database.Insert(key, value);
+        database.Save();
+    }
+
+    if (arg == "get") {
+        std::string key = argv[2];
+        std::string value = database.Get(key);
+        std::cout << std::format("The value of '{}' is '{}'", key, value) << '\n';
+    }
+
     return 0;
 }
