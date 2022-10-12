@@ -63,9 +63,7 @@ int main(int argc,char** argv ) {
         std::cout << std::format("Added new entry: The key is '{}' and the value is '{}'", key, value) << '\n';
         database.Insert(key, value);
         database.Save();
-    }
-
-    if (arg == "get") {
+    } else if (arg == "get") {
         std::string key = argv[2];
         std::string value = database.Get(key);
         std::cout << std::format("The value of '{}' is '{}'", key, value) << '\n';
