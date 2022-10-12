@@ -14,9 +14,7 @@ fn main() {
         database.insert(key, value);
         database.save().expect("Database was unable to save.")
 
-    }
-
-    if arg == "get" {
+    } else if arg == "get" {
         let key = args.next().unwrap();
         let value = database.get(&key);
         println!("the value of '{}' is '{}'", key, value);
