@@ -39,7 +39,7 @@ impl Database {
             Err(error) => {
                 if error.kind() == std::io::ErrorKind::NotFound {
                     std::fs::write(&path, "")?;
-                    std::fs::read_to_string(&path)?
+                    String::new()
                 } else {
                     print!("{}",error);
                     return Err(error)
@@ -70,8 +70,8 @@ impl Database {
 
     fn save(&self, path: &str) -> Result<(), std::io::Error>  {
         let mut s = String::new();
-        for pair in &self.map {
-            s += &format!("{}\t{}\n", pair.0, pair.1);
+        for (key, value) in &self.map {
+            s += &format!("{}\t{}\n", key, value);
         }
 
         std::fs::write(path, s)
