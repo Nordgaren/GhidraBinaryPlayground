@@ -3,7 +3,7 @@ use std::collections::HashMap;
 fn main() {
     let mut args = std::env::args().skip(1);
 
-    let arg = args.next().unwrap();
+    let arg = args.next().expect("No arguments passed to program.");
     let mut database = Database::new("sample_rust.db").expect("Could not read database");
 
     if arg == "set" {
@@ -23,8 +23,6 @@ fn main() {
     }
 
 }
-
-
 
 struct Database {
     map: HashMap<String, String>
