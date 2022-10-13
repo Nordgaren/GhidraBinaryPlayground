@@ -206,17 +206,88 @@ void ht_dump(ht_t *hashtable) {
     }
 }
 
-void string_toupper(char *temp) {
-    char *name;
-    name = strtok(temp, ":");
+size_t get_total_characters(ht_t *hashtable) {
+    size_t size = 0;
+    for (int i = 0; i < TABLE_SIZE; ++i) {
+        entry_t *entry = hashtable->entries[i];
 
-    // Convert to upper case
-    char *s = name;
-    while (*s) {
-        *s = toupper((unsigned char) *s);
-        s++;
+        if (entry == NULL) {
+            continue;
+        }
+
+
+        for (;;) {
+            char* temp = entry->key;
+            for (; *temp; ++temp) {
+                size++;
+            }
+
+            temp = entry->value;
+            for (; *temp; ++temp) {
+                size++;
+            }
+
+            if (entry->next == NULL) {
+                break;
+            }
+
+            entry = entry->next;
+        }
     }
 
+    return size;
+}
+
+size_t get_total_entries(ht_t *hashtable) {
+    size_t size = 0;
+    for (int i = 0; i < TABLE_SIZE; ++i) {
+        entry_t *entry = hashtable->entries[i];
+
+        if (entry == NULL) {
+            continue;
+        }
+
+
+        for (;;) {
+            size++;
+            if (entry->next == NULL) {
+                break;
+            }
+
+            entry = entry->next;
+        }
+    }
+
+    return size;
+}
+
+
+char* ht_tostring(ht_t *hashtable) {
+    size_t entries = get_total_entries(hashtable);
+    size_t count = get_total_characters(hashtable);
+    size_t total = count + (entries * 2) + 1;
+    char* contents = calloc(1,total);
+
+    char* temp = contents;
+    for (int i = 0; i < TABLE_SIZE; ++i) {
+        entry_t *entry = hashtable->entries[i];
+
+        if (entry == NULL) {
+            continue;
+        }
+
+        for (;;) {
+            temp += sprintf(temp ,"%s\t%s\n", entry->key, entry->value);
+
+            if (entry->next == NULL) {
+                break;
+            }
+
+            entry = entry->next;
+        }
+    }
+
+    return contents;
 }
 
 #endif //HASHMAPDATABASE_HASHTABLE_H

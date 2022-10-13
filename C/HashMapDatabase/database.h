@@ -1,40 +1,13 @@
 #ifndef HASHMAPDATABASE_DATABASE_H
 #define HASHMAPDATABASE_DATABASE_H
+
 #include "hashtable.h"
+#include "helpers.h"
 
 typedef struct {
     char *path;
     ht_t *map;
 } database_t;
-
-char *open_file(char *path) {
-    FILE *in;
-    fopen_s(&in, path, "r");
-    if (in == NULL) {
-        return "";
-    }
-
-    fseek(in, 0, SEEK_END);
-    long fsize = ftell(in);
-    fseek(in, 0, SEEK_SET);  /* same as rewind(in); */
-
-    char *string = malloc(fsize + 1);
-    fread(string, fsize, 1, in);
-    fclose(in);
-    string[fsize] = 0;
-    return string;
-
-}
-
-void write_file(char *path, char *contents) {
-    FILE *out;
-    fopen_s(&out, path, "w");
-    if (out == NULL) {
-        return;
-    }
-    fputs(contents, out);
-    fclose(out);
-}
 
 database_t *database_create(char *path) {
     database_t *db = malloc(sizeof(database_t));
@@ -46,6 +19,16 @@ database_t *database_create(char *path) {
 
     char *contents = open_file(path);
 
+    if (contents != NULL && *contents != 0) {
+        char *token = strtok(contents, "\n");
+        int offset = split_once(token, '\t');
+        ht_set(db->map, token, token + offset);
+
+        while (token = strtok(0, "\n")) {
+            int offset = split_once(token, '\t');
+            ht_set(db->map, token, token + offset);
+        }
+    }
 
     return db;
 }
@@ -61,8 +44,7 @@ void database_destroy(database_t *db) {
 }
 
 void database_save(database_t *db) {
-
-    char *contents = "";
+    char *contents = ht_tostring(db->map);
     write_file(db->path, contents);
 }
 
