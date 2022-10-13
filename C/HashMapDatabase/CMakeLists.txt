@@ -3,4 +3,4 @@ project(HashMapDatabase C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(HashMapDatabase main.c)
+add_executable(HashMapDatabase main.c database.h hashtable.h)
