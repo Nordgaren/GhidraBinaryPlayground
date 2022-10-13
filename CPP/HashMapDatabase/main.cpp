@@ -55,6 +55,7 @@ private:
 int main(int argc,char** argv ) {
 
     Database database("sample_cpp.db");
+    if (argc < 3) throw std::runtime_error("No arguments passed to program.");
     std::string arg = argv[1];
     if (arg == "set") {
         std::string key = argv[2];

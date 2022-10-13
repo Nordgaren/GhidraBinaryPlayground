@@ -1,6 +1,12 @@
 #include "database.h"
 
 int main(int argc, char **argv) {
+
+    if (argc < 3) {
+        printf("No arguments passed to program.");
+        return -1;
+    }
+
     database_t *db = database_create("sample_c.db");
     char *arg = argv[1];
     if (memcmp(arg, "set", 3) == 0) {
